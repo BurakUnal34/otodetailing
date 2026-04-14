@@ -1,0 +1,21 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind",
+      "description": "Tailwind CSS: inject base, components, and/or utilities layers."
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS: inline utility classes as raw CSS."
+    },
+    {
+      "name": "@layer",
+      "description": "Tailwind CSS: assign rules to base, components, or utilities layer."
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS: path to tailwind config (v3.3+)."
+    }
+  ]
+}
