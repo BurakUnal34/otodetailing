@@ -1,3 +1,5 @@
+import { SITE_NAME } from "@/lib/site-config";
+
 /** OpenStreetMap yerleşik harita (API anahtarı gerekmez). Konum + işaretçi .env ile değiştirilebilir. */
 const shopAddress =
   "(Fevzi Çakmak, 1986 Sk No.2, 34200 Bağcılar/İstanbul)";
@@ -31,7 +33,7 @@ export function SiteMap() {
         </div>
         <div className="overflow-hidden rounded-2xl border border-zinc-800 shadow-xl shadow-black/40 ring-1 ring-white/5">
           <iframe
-            title="Oto Detailing konum haritası"
+            title={`${SITE_NAME} konum haritası`}
             src={defaultEmbed}
             className="aspect-[21/9] min-h-[220px] w-full max-h-[420px] bg-zinc-900 sm:min-h-[280px]"
             loading="lazy"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { brandInitials, SITE_NAME } from "@/lib/site-config";
 
 const STORAGE_KEY = "otodetailing-intro-splash";
 
@@ -67,11 +68,11 @@ export function PageSplash({ durationMs = 3500, fadeMs = 550 }: { durationMs?: n
 
       <div className="relative flex flex-col items-center gap-8 px-6">
         <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-amber-700 text-2xl font-black tracking-tight text-zinc-950 shadow-2xl shadow-brand-900/50 ring-4 ring-brand-500/20">
-          <span className="animate-pulse">OD</span>
+          <span className="animate-pulse">{brandInitials()}</span>
         </div>
 
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-brand-400">Oto Detailing</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-brand-400">{SITE_NAME}</p>
           <p className="text-lg font-medium text-zinc-200">Mağaza hazırlanıyor…</p>
         </div>
 

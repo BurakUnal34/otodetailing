@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { SITE_NAME } from "@/lib/site-config";
 
 export function AdminGirisForm() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export function AdminGirisForm() {
       </Link>
       <div className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl">
         <h1 className="text-lg font-bold text-white">Yönetici girişi</h1>
-        <p className="mt-1 text-xs text-zinc-500">Oto Detailing paneli</p>
+        <p className="mt-1 text-xs text-zinc-500">{SITE_NAME} paneli</p>
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <label className="block text-xs text-zinc-400">
             E-posta

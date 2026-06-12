@@ -2,6 +2,24 @@ import type { Metadata } from "next";
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME?.trim() || "Oto Detailing";
 
+/** Marka isminden 2 harfli kısaltma üretir (logo kutusu için).
+ *  "Alpasel Carcare" → "AC", "OtoDetailing" → "OT", "X" → "X". */
+export function brandInitials(name: string = SITE_NAME): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "OD";
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
+}
+
+/** Marka ismini header logosu için iki satıra böler.
+ *  Tek kelime ise üst satır boş, alt satıra tüm kelime gelir. */
+export function splitBrandName(name: string = SITE_NAME): { top: string; bottom: string } {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { top: "Oto", bottom: "Detailing" };
+  if (parts.length === 1) return { top: "", bottom: parts[0]! };
+  return { top: parts[0]!, bottom: parts.slice(1).join(" ") };
+}
+
 /** Ana sayfa ve şema için varsayılan açıklama */
 export const SITE_DESCRIPTION =
   "İstanbul Bağcılar’da oto detailing mağazası: araç içi ve dışı temizlik, cila, koruma, şampuan ve profesyonel bakım ürünleri. Güvenli ödeme ve hızlı kargo ile online sipariş.";
