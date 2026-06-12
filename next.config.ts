@@ -22,8 +22,8 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   /** Standalone build: Hostinger / VPS gibi self-host ortamlar için
    *  `.next/standalone/` altında self-contained bir Node sunucusu üretir.
-   *  Vercel için zararsız — Vercel kendi build pipeline'ında bunu görmezden gelir. */
-  output: "standalone",
+   *  Vercel'de devre dışı bırakıyoruz; Vercel kendi optimize çıktısını kullanır. */
+  output: process.env.VERCEL ? undefined : "standalone",
   /** Sharp native modül; paketlenince Turbopack/Webpack bazen bozuyor — yükleme ve diğer route’ları etkileyebilir. */
   serverExternalPackages: ["sharp"],
   turbopack: {
