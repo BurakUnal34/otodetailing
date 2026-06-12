@@ -17,3 +17,36 @@ body {
 ::selection {
   @apply bg-brand-500/30 text-white;
 }
+
+/* Yasal sayfalar için tipografi (KVKK, mesafeli satış vb.) */
+.legal-body h2 {
+  @apply mt-10 text-xl font-semibold text-white;
+}
+.legal-body h3 {
+  @apply mt-6 text-base font-semibold text-zinc-100;
+}
+.legal-body p {
+  @apply leading-relaxed text-zinc-300;
+}
+.legal-body ul {
+  @apply ml-5 list-disc space-y-1.5 text-zinc-300 marker:text-brand-400/70;
+}
+.legal-body ol {
+  @apply ml-5 list-decimal space-y-1.5 text-zinc-300 marker:text-brand-400/70;
+}
+.legal-body strong {
+  @apply text-white;
+}
+.legal-body a {
+  @apply text-brand-300 underline-offset-2 hover:text-brand-200 hover:underline;
+}
+.legal-body table {
+  @apply w-full border-collapse text-left text-xs sm:text-sm;
+}
+.legal-body th,
+.legal-body td {
+  @apply border border-zinc-800 px-3 py-2;
+}
+.legal-body th {
+  @apply bg-zinc-900/60 font-semibold text-white;
+}

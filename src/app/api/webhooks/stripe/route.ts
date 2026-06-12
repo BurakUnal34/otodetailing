@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { buildPayload, sendOrderEmails } from "@/lib/fulfill-stripe-order";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     const orderId = session.metadata?.orderId;
     if (!orderId) return NextResponse.json({ received: true });
 
+    let updated = false;
     await prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
         where: { id: orderId },
@@ -34,11 +36,11 @@ export async function POST(req: Request) {
       if (!order || order.status === "ODENDI") return;
 
       for (const item of order.items) {
-        const updated = await tx.product.updateMany({
+        const result = await tx.product.updateMany({
           where: { id: item.productId, stock: { gte: item.quantity } },
           data: { stock: { decrement: item.quantity } },
         });
-        if (updated.count !== 1) {
+        if (result.count !== 1) {
           throw new Error("Stok güncellenemedi");
         }
       }
@@ -47,7 +49,18 @@ export async function POST(req: Request) {
         where: { id: orderId },
         data: { status: "ODENDI" },
       });
+      updated = true;
     });
+
+    if (updated) {
+      const fresh = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+      if (fresh) {
+        void sendOrderEmails(buildPayload(fresh));
+      }
+    }
   }
 
   return NextResponse.json({ received: true });

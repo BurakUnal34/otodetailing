@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/shop/add-to-cart";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-json-ld";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
 import { formatTryFromCents } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
@@ -41,6 +42,13 @@ export default async function UrunDetayPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <ProductJsonLd product={product} category={product.category} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Ana sayfa", href: "/" },
+          { name: product.category.name, href: `/kategori/${product.category.slug}` },
+          { name: product.name, href: `/urun/${product.slug}` },
+        ]}
+      />
       <nav className="text-sm text-zinc-500">
         <Link href="/" className="hover:text-brand-300">
           Ana sayfa

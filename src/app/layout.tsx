@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { CartProvider } from "@/components/cart/cart-provider";
+import { GoogleAnalytics } from "@/components/layout/google-analytics";
 import { WhatsAppFloat } from "@/components/layout/whatsapp-float";
 import { rootMetadataExtras, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site-config";
 
@@ -18,7 +21,15 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  manifest: "/manifest.webmanifest",
   ...rootMetadataExtras(),
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,6 +42,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <WhatsAppFloat />
           </CartProvider>
         </Providers>
+        <Analytics />
+        <SpeedInsights />
+        <GoogleAnalytics />
       </body>
     </html>
   );

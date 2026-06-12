@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="G�rsel haz1rlan1yor">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#1f1d1a"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <g transform="translate(300 270)">
+    <circle r="78" fill="none" stroke="url(#brand)" stroke-width="2" opacity="0.45"/>
+    <circle r="48" fill="url(#brand)" opacity="0.12"/>
+    <text x="0" y="10" text-anchor="middle" font-family="Inter, system-ui, sans-serif"
+          font-size="28" font-weight="800" fill="#fbbf24" letter-spacing="0.18em">OD</text>
+  </g>
+  <text x="300" y="392" text-anchor="middle" font-family="Inter, system-ui, sans-serif"
+        font-size="20" font-weight="600" fill="#e5e5e5" letter-spacing="0.04em">
+    G�rsel haz1rlan1yor
+  </text>
+  <text x="300" y="420" text-anchor="middle" font-family="Inter, system-ui, sans-serif"
+        font-size="13" fill="#a3a3a3" letter-spacing="0.04em">
+    Y�netim panelinden �r�n g�rseli ekleyin
+  </text>
+</svg>

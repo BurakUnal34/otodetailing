@@ -1,0 +1,2 @@
+# Lütfen elle düzenlemeyin. Prisma her migrate çalışmasında günceller.
+provider = "postgresql"

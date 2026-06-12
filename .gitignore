@@ -27,16 +27,24 @@ yarn-error.log*
 # env files
 .env
 .env*.local
+production-env.txt
 
 # yüklenen ürün görselleri (klasör yapısı .gitkeep ile kalır)
 public/uploads/products/*
 !public/uploads/products/.gitkeep
+
+# DB yedekleri
+backups/*
+!backups/.gitkeep
 
 # prisma / sqlite
 prisma/*.db
 prisma/*.db-journal
 /dev.db
 /dev.db-journal
+
+# editor / araç önbellekleri
+skills-lock.json
 
 # typescript
 *.tsbuildinfo

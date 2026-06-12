@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const SITE_NAME = "Oto Detailing";
+export const SITE_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME?.trim() || "Oto Detailing";
 
 /** Ana sayfa ve şema için varsayılan açıklama */
 export const SITE_DESCRIPTION =
@@ -16,6 +16,34 @@ export const BUSINESS_ADDRESS = {
 } as const;
 
 export const BUSINESS_GEO = { latitude: 41.0410625, longitude: 28.8600414 } as const;
+
+/** Hukuki sayfalarda ve footer'da kullanılır. Boş alanlar yapı taşı olarak gösterilmez. */
+export type BusinessInfo = {
+  legalName: string;
+  brandName: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  taxOffice: string;
+  taxNumber: string;
+  mersis: string;
+  address: string;
+};
+
+export function getBusinessInfo(): BusinessInfo {
+  const a = BUSINESS_ADDRESS;
+  return {
+    legalName: process.env.NEXT_PUBLIC_BUSINESS_LEGAL_NAME?.trim() || "",
+    brandName: SITE_NAME,
+    email: process.env.NEXT_PUBLIC_BUSINESS_EMAIL?.trim() || "",
+    phone: process.env.NEXT_PUBLIC_BUSINESS_PHONE?.trim() || "",
+    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_PHONE?.trim() || "",
+    taxOffice: process.env.NEXT_PUBLIC_BUSINESS_TAX_OFFICE?.trim() || "",
+    taxNumber: process.env.NEXT_PUBLIC_BUSINESS_TAX_NUMBER?.trim() || "",
+    mersis: process.env.NEXT_PUBLIC_BUSINESS_MERSIS?.trim() || "",
+    address: `${a.streetAddress}, ${a.postalCode} ${a.addressLocality}/${a.addressRegion}`,
+  };
+}
 
 /** Geçersiz veya protokolsüz değerlerde asla throw etmez (metadataBase 500 hatasını önler). */
 function normalizeOriginCandidate(raw: string | undefined): string | null {

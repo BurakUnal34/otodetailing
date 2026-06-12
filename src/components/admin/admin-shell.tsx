@@ -8,6 +8,7 @@ const links = [
   { href: "/admin", label: "Özet" },
   { href: "/admin/urunler", label: "Ürünler" },
   { href: "/admin/siparisler", label: "Siparişler" },
+  { href: "/admin/hesabim", label: "Hesabım" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

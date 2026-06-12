@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { getSiteUrl } from "@/lib/site-config";
 import { getStripe } from "@/lib/stripe";
 
 type Line = { productId?: unknown; quantity?: unknown };
+
+const CHECKOUT_CAPACITY = 5; // 5 istek
+const CHECKOUT_REFILL_PER_MS = 5 / (60 * 1000); // 1 dakikada 5 token
 
 function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
@@ -14,6 +18,18 @@ function phoneDigits(s: string): string {
 }
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`checkout:${ip}`, CHECKOUT_CAPACITY, CHECKOUT_REFILL_PER_MS);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "Çok fazla istek. Lütfen biraz bekleyip tekrar deneyin." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) },
+      },
+    );
+  }
+
   const stripe = getStripe();
   if (!stripe) {
     return NextResponse.json(
@@ -28,11 +44,28 @@ export async function POST(req: Request) {
     customerEmail?: unknown;
     customerPhone?: unknown;
     shippingAddress?: unknown;
+    acceptsTerms?: unknown;
+    hp?: unknown;
+    formAgeMs?: unknown;
   };
   try {
     body = (await req.json()) as typeof body;
   } catch {
     return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
+  }
+
+  if (typeof body.hp === "string" && body.hp.length > 0) {
+    return NextResponse.json({ error: "İstek geçersiz." }, { status: 400 });
+  }
+  const formAgeMs = typeof body.formAgeMs === "number" ? body.formAgeMs : 0;
+  if (formAgeMs > 0 && formAgeMs < 1000) {
+    return NextResponse.json({ error: "İstek çok hızlı gönderildi." }, { status: 400 });
+  }
+  if (body.acceptsTerms !== true) {
+    return NextResponse.json(
+      { error: "Mesafeli Satış Sözleşmesi onaylanmadı." },
+      { status: 400 },
+    );
   }
 
   const linesRaw = Array.isArray(body.lines) ? body.lines : [];

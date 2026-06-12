@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getFeaturedProductsPage } from "@/lib/featured-products";
+import { getHomeHeroSlides } from "@/lib/hero-slides";
 import { prisma } from "@/lib/prisma";
 import { FeaturedSection } from "@/components/shop/featured-section";
 import { ProductSearch } from "@/components/shop/product-search";
-import { HeroSlider, type HeroSlide } from "@/components/shop/hero-slider";
+import { HeroSlider } from "@/components/shop/hero-slider";
 import { ServicesSlider } from "@/components/shop/services-slider";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site-config";
 
@@ -24,45 +25,6 @@ export const revalidate = 60;
 
 const FEATURED_PAGE_SIZE = 12;
 
-const HOME_HERO_SLIDES: HeroSlide[] = [
-  {
-    src: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1920&q=85",
-    alt: "Araç içi detay ve bakım",
-    content: {
-      label: "Profesyonel araç bakımı",
-      title: "Temizlik, koruma ve parlaklık için seçilmiş ürünler.",
-      description:
-        "Kategorilere göre keşfedin, detaylı ürün sayfalarında içerik ve stok bilgisini görün, güvenli ödeme ile siparişinizi tamamlayın.",
-      primary: { href: "/urunler", label: "Ürünlere göz at" },
-      secondary: { href: "/kategori/cila-koruma", label: "Cila & koruma" },
-    },
-  },
-  {
-    src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1920&q=85",
-    alt: "Araç dış yüzey ve parlaklık",
-    content: {
-      label: "Dış yüzey bakımı",
-      title: "Köpük, şampuan ve güvenli yıkama ile parlak sonuç.",
-      description:
-        "Boya ve trim için seçilmiş dış temizlik ürünleri; yüzey hazırlığından hızlı cila adımına kadar ihtiyacınız olanları keşfedin.",
-      primary: { href: "/kategori/dis-yikama", label: "Dış yıkama ürünleri" },
-      secondary: { href: "/urunler", label: "Tüm ürünler" },
-    },
-  },
-  {
-    src: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1920&q=85",
-    alt: "Klasik araç detay",
-    content: {
-      label: "Cila & parlaklık",
-      title: "Wax, hızlı cila ve uzun süreli koruma seçenekleri.",
-      description:
-        "Boya derinliğini ortaya çıkaran ürünler ve seramik / sealant katmanlarıyla yüzeyinizi günlük kirleticilere karşı güçlendirin.",
-      primary: { href: "/kategori/cila-koruma", label: "Cila & koruma" },
-      secondary: { href: "/kategori/mikrofiber-aksesuar", label: "Mikrofiber & aksesuar" },
-    },
-  },
-];
-
 export default async function HomePage({
   searchParams,
 }: {
@@ -78,10 +40,11 @@ export default async function HomePage({
   ]);
 
   const { products: featured, page, totalPages, total } = featuredPayload;
+  const heroSlides = getHomeHeroSlides();
 
   return (
     <div>
-      <HeroSlider slides={HOME_HERO_SLIDES} />
+      <HeroSlider slides={heroSlides} />
 
       <section className="relative border-y border-zinc-800/80 bg-gradient-to-b from-zinc-950 via-zinc-900/40 to-zinc-950 py-14 sm:py-16">
         <div

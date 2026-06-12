@@ -22,18 +22,20 @@ export function ProductCard({ product }: { product: ProductCardModel }) {
   return (
     <article className="group/card flex flex-col overflow-hidden rounded-xl border border-zinc-800/90 bg-zinc-900/50 shadow-md shadow-black/20 ring-1 ring-white/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-500/45 hover:shadow-xl hover:shadow-brand-500/10 hover:ring-brand-500/20">
       <div className="relative aspect-square overflow-hidden bg-zinc-900">
-        {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            sizes="(max-width:768px) 100vw, 33vw"
-            className="object-cover transition duration-500 group-hover/card:scale-[1.06]"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-sm text-zinc-500">
-            Görsel yok
-          </div>
+        <Image
+          src={product.imageUrl || "/placeholder.svg"}
+          alt={product.name}
+          fill
+          sizes="(max-width:768px) 100vw, 33vw"
+          className="object-cover transition duration-500 group-hover/card:scale-[1.06]"
+        />
+        {!product.imageUrl && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-3 mx-auto block w-max rounded-full bg-zinc-950/70 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-300"
+          >
+            Görsel hazırlanıyor
+          </span>
         )}
 
         {!inStock && (

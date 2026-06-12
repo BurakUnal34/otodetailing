@@ -19,6 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = [
     { url: base, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
     { url: `${base}/urunler`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/iletisim`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.4 },
+    { url: `${base}/sayfa/kvkk`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/sayfa/gizlilik`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/sayfa/cerez-politikasi`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/sayfa/mesafeli-satis-sozlesmesi`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/sayfa/iade-ve-cayma`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/sayfa/kullanim-kosullari`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const categoryEntries: MetadataRoute.Sitemap = categories.map((c) => ({

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
 import { formatTryFromCents } from "@/lib/money";
 
@@ -23,9 +23,18 @@ export function CartCheckout() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [identityNumber, setIdentityNumber] = useState("");
+  const [acceptsTerms, setAcceptsTerms] = useState(false);
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const honeypotRef = useRef<HTMLInputElement | null>(null);
+  const formMountedAt = useRef<number>(Date.now());
+
+  const provider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER ?? "stripe").toLowerCase();
+  const isIyzico = provider === "iyzico";
+  const checkoutEndpoint = isIyzico ? "/api/checkout-iyzico" : "/api/checkout";
+  const providerLabel = isIyzico ? "iyzico" : "Stripe";
 
   const ids = useMemo(() => lines.map((l) => l.productId), [lines]);
 
@@ -75,11 +84,14 @@ export function CartCheckout() {
 
   const phoneOk = useMemo(() => phone.replace(/\D/g, "").length >= 10, [phone]);
   const addressOk = useMemo(() => address.trim().length >= 10, [address]);
+  const identityOk = !isIyzico || /^\d{11}$/.test(identityNumber.trim());
   const canPay =
     name.trim().length >= 2 &&
     email.trim().length > 0 &&
     phoneOk &&
     addressOk &&
+    identityOk &&
+    acceptsTerms &&
     !missing &&
     lines.length > 0;
 
@@ -89,9 +101,25 @@ export function CartCheckout() {
       setCheckoutError("Ad soyad, e-posta, telefon (en az 10 rakam) ve ev / teslimat adresi (en az 10 karakter) zorunludur.");
       return;
     }
+    if (!acceptsTerms) {
+      setCheckoutError("Devam etmek için Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme&apos;yi onaylayın.");
+      return;
+    }
+    if (honeypotRef.current?.value) {
+      setCheckoutError("İstek geçersiz.");
+      return;
+    }
+    if (Date.now() - formMountedAt.current < 1500) {
+      setCheckoutError("Lütfen formu doldurduktan sonra biraz bekleyip tekrar deneyin.");
+      return;
+    }
+    if (isIyzico && !identityOk) {
+      setCheckoutError("iyzico ödemesi için 11 haneli T.C. kimlik numarası zorunludur.");
+      return;
+    }
     setCheckoutBusy(true);
     try {
-      const res = await fetch("/api/checkout", {
+      const res = await fetch(checkoutEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -100,6 +128,10 @@ export function CartCheckout() {
           customerEmail: email.trim(),
           customerPhone: phone.trim(),
           shippingAddress: address.trim(),
+          ...(isIyzico ? { identityNumber: identityNumber.trim() } : {}),
+          acceptsTerms: true,
+          hp: honeypotRef.current?.value ?? "",
+          formAgeMs: Date.now() - formMountedAt.current,
         }),
       });
       const data = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
@@ -276,17 +308,85 @@ export function CartCheckout() {
               minLength={10}
             />
           </label>
+          {isIyzico && (
+            <label className="block text-xs text-zinc-400 sm:col-span-2">
+              T.C. Kimlik No <span className="text-rose-400">*</span>
+              <input
+                inputMode="numeric"
+                value={identityNumber}
+                onChange={(e) => setIdentityNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white"
+                placeholder="11 haneli kimlik numarası"
+                required
+                pattern="\d{11}"
+                maxLength={11}
+              />
+            </label>
+          )}
+          {/* Honeypot — gerçek kullanıcılar görmez; botların doldurması beklenir */}
+          <div aria-hidden="true" className="hidden">
+            <label>
+              Web sitesi
+              <input
+                ref={honeypotRef}
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                name="website"
+                defaultValue=""
+              />
+            </label>
+          </div>
         </div>
+
+        <label className="mt-5 flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 text-xs text-zinc-300">
+          <input
+            type="checkbox"
+            checked={acceptsTerms}
+            onChange={(e) => setAcceptsTerms(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-brand-500"
+            required
+          />
+          <span>
+            <Link
+              href="/sayfa/mesafeli-satis-sozlesmesi"
+              target="_blank"
+              className="font-semibold text-brand-300 underline-offset-2 hover:underline"
+            >
+              Mesafeli Satış Sözleşmesi
+            </Link>
+            &apos;ni,{" "}
+            <Link
+              href="/sayfa/iade-ve-cayma"
+              target="_blank"
+              className="font-semibold text-brand-300 underline-offset-2 hover:underline"
+            >
+              Ön Bilgilendirme Formu&apos;nu (İade / Cayma)
+            </Link>
+            {" "}
+            ve{" "}
+            <Link
+              href="/sayfa/kvkk"
+              target="_blank"
+              className="font-semibold text-brand-300 underline-offset-2 hover:underline"
+            >
+              KVKK Aydınlatma Metni
+            </Link>
+            &apos;ni okudum, anladım ve kabul ediyorum.
+          </span>
+        </label>
+
         {checkoutError && <p className="mt-4 text-sm text-rose-300">{checkoutError}</p>}
         <button
           type="submit"
           disabled={checkoutBusy || loading || !canPay}
           className="mt-6 w-full rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-zinc-950 hover:bg-brand-400 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {checkoutBusy ? "Yönlendiriliyor…" : "Ödemeye geç (Stripe)"}
+          {checkoutBusy ? "Yönlendiriliyor…" : `Ödemeye geç (${providerLabel})`}
         </button>
         <p className="mt-3 text-xs text-zinc-600">
-          Stripe anahtarı yoksa ödeme başlamaz; `.env` içine `STRIPE_SECRET_KEY` ekleyin.
+          Ödemeyi tamamladığınızda sözleşmeyi kabul etmiş sayılırsınız. Onay e-postası sipariş sonrası
+          adresinize gönderilir.
         </p>
       </form>
     </div>
